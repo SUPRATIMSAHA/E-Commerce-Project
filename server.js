@@ -73,6 +73,6 @@ app.use(authRoutes);
 app.use(cartRoutes);
 app.use(paymentRoutes);
 
-app.listen(3000, () => {
+app.listen(PORT, () => {
   console.log(`Server started at PORT ${PORT}`);
 });
