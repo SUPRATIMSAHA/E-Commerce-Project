@@ -7,7 +7,7 @@ const methodOverride = require("method-override");
 const passport = require("./utils/passport");
 // const seedDB = require("./seed");
 
-if (process.NODE_ENV != "production") {
+if (process.env.NODE_ENV != "production") {
   require("dotenv").config();
 }
 
