@@ -1,0 +1,105 @@
+<%- include("../partials/header.ejs", {style: ["account", "style"], title: "My Account | ShopMyCart"}) %>
+<%- include("../partials/navbar.ejs", {active: ""}) %>
+
+
+<div class="container-fluid" style="margin-top: 20px;">
+    <%- include('../partials/flash.ejs') %>
+    <div class="row">
+        <div class="col-11 col-md-3 mx-auto p-3 mt-3 cart" style="height: fit-content;">
+            <div class="d-flex justify-content-center align-content-center">
+                <% if(currentUser.gender && currentUser.gender == "male") { %>
+                <img src="/images/profilePicture/boy.png" width="50" height="50" alt="">
+                <% } else { %>
+                <img src="/images/profilePicture/girl.png" width="50" height="50" alt="">
+                <% } %>
+                <div class="profile-name">
+                    <div style="font-size: 12px;">Hello,</div>
+                    <div class="name"><%= currentUser.firstName %> <%= currentUser.lastName %></div>
+                </div>
+            </div>
+            <hr>
+            <div class="myOrders">
+                <a href="/account/orders"><i class="fas fa-shopping-bag"></i> &nbsp;My Orders</a>
+            </div>
+            <% if(!currentUser.google.length) { %>
+            <hr>
+            <div class="changePassword">
+                <a href="/account/reset/password"><i class="fas fa-key"></i> &nbsp;Change Password</a>
+            </div>
+            <% } %>
+            <hr>
+            <div class="logOut">
+                <a href="/user/logout"><i class="fas fa-sign-out-alt"></i> &nbsp;Logout</a>
+            </div>
+        </div>
+        <div class="col-11 col-md-8 mx-auto mt-3 p-4 cart">
+            <form class="body" action="/account/userDetails/update?_method=PATCH" method="POST">
+                <div class="mb-3 change">
+                    <span class="fs-4" style="font-weight: 500;">Personal Information</span>
+                    <button class="btn edit">Edit</button>
+                </div>
+                <input class="mt-2 p-2 me-2" type="text" name="firstName" value="<%= currentUser.firstName %>" required
+                    disabled>
+                <input class="mt-2 p-2" type="text" name="lastName" value="<%= currentUser.lastName %>" required
+                    disabled>
+                <div class="body mt-3 mb-3">
+                    <p class="mb-3">Your gender</p>
+                    <% if(currentUser.gender && currentUser.gender == "male") { %>
+                    <input type="radio" id="male" name="gender" value="male" required checked disabled>
+                    <% } else { %>
+                    <input type="radio" id="male" name="gender" value="male" required disabled>
+                    <% } %>
+                    <label for="male" class="me-3">Male</label>
+                    <% if(currentUser.gender && currentUser.gender == "female") { %>
+                    <input type="radio" id="female" name="gender" value="female" checked disabled>
+                    <% } else { %>
+                    <input type="radio" id="female" name="gender" value="female" disabled>
+                    <% } %>
+                    <label for="female">Female</label>
+                </div>
+            </form>
+            <form class="body mt-5 mb-3" action="/account/phoneno/update?_method=PATCH" method="POST">
+                <div class="mb-3 change">
+                    <span class="fs-4" style="font-weight: 500;">Mobile Number</span>
+                    <button class="btn edit">Edit</button>
+                </div>
+                <input class="mt-2 p-2" type="tel" name="phoneno" value="<%= currentUser.phoneno %>" required disabled>
+            </form>
+            <form class="body mt-5 mb-3" action="/account/address/update?_method=PATCH" method="POST">
+                <div class="mb-3 change">
+                    <span class="fs-4" style="font-weight: 500;">Address</span>
+                    <button class="btn edit">Edit</button>
+                </div>
+                <% if(currentUser.address) { %>
+                <input class="mt-2 p-2" type="text" name="address" value="<%= currentUser.address %>" required disabled>
+                <% } else { %>
+                <input class="mt-2 p-2" type="text" name="address" required disabled>
+                <% } %>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<%- include("../partials/footer.ejs", {scripts: []})%>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script>
+    $(document).on("click", ".edit", (e) => {
+        const body = e.currentTarget.parentNode.parentNode
+        $(body).find('input').prop("disabled", false)
+        $(body).find(".change .edit").remove()
+        const cancel = `<button class="btn cancel">Cancel</button>`
+        $(body).find(".change").append(cancel)
+        const save = '<button type="submit" class="btn btn-primary m-3 save">Save</button>'
+        $(body).append(save)
+    })
+    $(document).on("click", ".cancel", (e) => {
+        const body = e.currentTarget.parentNode.parentNode
+        $(body).find('input').prop("disabled", true)
+        $(body).find(".change .cancel").remove()
+        const edit = `<button class="btn edit">Edit</button>`
+        $(body).find(".change").append(edit)
+        $(body).find(".save").remove()
+    })
+</script>

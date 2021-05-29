@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <p>Hello <%= name %>,</p>
+    <br />
+    <h3>You are on your way!</h3>
+    <h3>Let's confirm your email address.</h3>
+    <br />
+    <p>By clicking on the following link you are confirming your email address.</p>
+    <br />
+    <a href="http://<%= host %>/confirmation/<%= email %>/<%= token %>"
+        style="background-color: #348eda; padding: 12px 45px;color: white;text-decoration: none; display: inline-block; font-size: 14px;">Confirm
+        Email Address
+    </a>
+    <br />
+    <p>This link will be active for next 12 hour.</p>
+</body>
+
+</html>

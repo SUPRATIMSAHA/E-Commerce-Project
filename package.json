@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,9 +19,20 @@
   },
   "homepage": "https://github.com/SUPRATIMSAHA/E-Commerce-Project#readme",
   "dependencies": {
+    "bcrypt": "^5.0.1",
+    "cloudinary": "^1.25.1",
+    "connect-flash": "^0.1.1",
+    "dotenv": "^9.0.2",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
+    "express-session": "^1.17.2",
     "method-override": "^3.0.0",
-    "mongoose": "^5.12.5"
+    "mongoose": "^5.12.5",
+    "multer": "^1.4.2",
+    "nodemailer": "^6.6.0",
+    "passport": "^0.4.1",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-local": "^1.0.0",
+    "stripe": "^8.149.0"
   }
 }

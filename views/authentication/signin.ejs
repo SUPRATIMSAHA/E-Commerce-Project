@@ -1,0 +1,45 @@
+<%- include("../partials/header.ejs", {style: [""], title: "SignIn"}) %>
+
+
+
+<div class="container">
+    <form class="row g-3 col-md-10 col-lg-8" action="/user/signin" method="POST" style="margin:10px auto">
+        <%- include('../partials/flash.ejs') %>
+        <h4 class="display-4">Sign In</h4>
+        <div class="col-12 mt-5">
+            <label for="username" class="form-label">Username</label>
+            <div class="input-group">
+                <span class="input-group-text" id="inputGroupPrepend2">@</span>
+                <input type="text" name="username" class="form-control" id="username"
+                    aria-describedby="inputGroupPrepend2" required>
+            </div>
+        </div>
+        <div class="col-12 mt-5">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" name="password" class="form-control" id="password" required>
+        </div>
+        <div class="col-12">
+            <button class="btn btn-primary" type="submit">Sign In</button>
+            <a class="float-end" href="/forgot/password">Forgot password?</a>
+        </div>
+        <div class="">
+            <span class="txt1">
+                Or SignIn with
+            </span>
+        </div>
+
+        <div>
+            <a href="/auth/google" class="login100-social-item">
+                <img src="/images/icons/icon-google.png" alt="GOOGLE">
+            </a>
+        </div>
+        <div class="col-12">
+            <span>New User? </span>
+            <a href="/user/signup">Sign Up</a>
+        </div>
+    </form>
+</div>
+
+
+
+<%- include("../partials/footer.ejs", {scripts: []})%>

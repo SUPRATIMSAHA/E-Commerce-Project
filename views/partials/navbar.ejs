@@ -1,31 +1,61 @@
-<nav
-  class="navbar navbar-expand-lg navbar-dark"
-  style="background-color: #0077b6"
->
-  <div class="container-fluid">
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #0077b6">
+  <div class="container">
     <a class="navbar-brand" href="#">ShopMyCart</a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarTogglerDemo02"
-      aria-controls="navbarTogglerDemo02"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02"
+      aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Home</a>
+      <ul class="navbar-nav mb-2 mb-md-0 w-100">
+        <li class="nav-item me-md-0 ms-md-0 ms-auto">
+          <% if (active == "home") { %>
+          <a class="nav-link active" aria-current="page" href="/">Home</a>
+          <% } else { %>
+          <a class="nav-link" aria-current="page" href="/">Home</a>
+          <% } %>
         </li>
-        <li class="nav-item">
+        <li class="nav-item me-md-0 ms-md-0 ms-auto">
+          <% if (active == "products") { %>
+          <a class="nav-link active" href="/products">Products</a>
+          <% } else { %>
           <a class="nav-link" href="/products">Products</a>
+          <% } %>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/products/new" tabindex="-1">New</a>
+        <li class="nav-item me-md-auto ms-md-0 ms-auto">
+          <% if (active == "new") { %>
+          <a class="nav-link active" href="/products/new">New</a>
+          <% } else { %>
+          <a class="nav-link" href="/products/new">New</a>
+          <% } %>
         </li>
+        <% if(!currentUser) { %>
+        <li class="nav-item ms-md-0 ms-auto">
+          <a class="nav-link active" href="/user/signin"><i class="fas fa-sign-in-alt"></i> Login</a>
+        </li>
+        <% } else { %>
+        <li class="nav-item ms-md-0 ms-auto">
+          <div class="pI mx-auto dropdown">
+            <div class="pI dropbtn text-capitalize nav-link" id="pI">
+              <%= currentUser.firstName %> <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="dropdown-content">
+              <a href="/account"><i class="fas fa-user-circle"></i> My Account</a>
+              <a href="/account/orders"><i class="fas fa-shopping-bag"></i> Orders</a>
+              <a href="/user/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+          </div>
+        </li>
+        <li class="nav-item ms-md-0 ms-auto">
+          <a class="nav-link active" href="/user/<%= currentUser._id %>/cart">
+            <i class="fas fa-shopping-cart"></i>
+            <% if(currentUser.cart.length > 0) { %>
+            <span
+              class="position-absolute translate-middle badge bg-danger rounded-pill bg-secondary"><%= currentUser.cart.length %></span>
+            <% } %>
+            <span class="ms-2">Cart</span>
+          </a>
+        </li>
+        <% } %>
       </ul>
     </div>
   </div>

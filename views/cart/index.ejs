@@ -1,0 +1,156 @@
+<%- include("../partials/header.ejs", {style: ["cart", "style"], title: "Shopping Cart | ShopMyCart"}) %>
+<%- include("../partials/navbar.ejs", {active: "products"}) %>
+
+<div class="container-fluid" style="margin-top: 20px;">
+    <%- include("../partials/flash")%>
+    <div class="row">
+
+        <% if (userCart.length > 0) { %>
+        <div class="col-md-8">
+            <div class="head border fw-bold p-2 bg-white">
+                My Cart (<%= userCart.length %>)
+                <% if(currentUser.address) { %>
+                <div class="float-end">Address:
+                    <select style="width: 100px;">
+                        <option><%= currentUser.address %></option>
+                    </select>
+                </div>
+                <% } else { %>
+                <div class="float-end">Address: <select>
+                        <option>Select a address</option>
+                    </select>
+                </div>
+                <% } %>
+            </div>
+            <div class="products">
+                <% for(let item of userCart) { %>
+                <div class="card">
+                    <div class="row g-0">
+                        <div class="col-lg-4 col-md-5">
+                            <img style="width: 100%; max-height: 350px;" src="<%=item.product.img%>" alt="...">
+                        </div>
+                        <div class="col-lg-8 col-md-7">
+                            <div class="card-body">
+                                <h5 class="card-title"><%= item.product.name %></h5>
+                                <p class="card-text">Seller: <%= item.product.user.firstName %>
+                                    <%= item.product.user.lastName %>
+                                </p>
+                                <p class="fs-3 fw-bold text-success">&#8377 <%= item.product.price %></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8 col-lg-4 col-md-5">
+                                <div class="m-sm-3 m-1">
+                                    <% if (item.quantity <= 1) { %>
+                                    <form class="d-inline"
+                                        action="/product/<%= item._id %>/quantity/decrease?_method=PATCH" method="POST">
+                                        <button class="quantity minus" disabled>-</button>
+                                    </form>
+                                    <% } else { %>
+                                    <form class="d-inline"
+                                        action="/product/<%= item._id %>/quantity/decrease?_method=PATCH" method="POST">
+                                        <button class="quantity minus">-</button>
+                                    </form>
+                                    <% } %>
+                                    <div class="value">
+                                        <%= item.quantity %>
+                                    </div>
+                                    <% if (item.quantity >= 10) { %>
+                                    <form class="d-inline"
+                                        action="/product/<%= item._id %>/quantity/increase?_method=PATCH" method="POST">
+                                        <button class="quantity" disabled>+</button>
+                                    </form>
+                                    <% } else { %>
+                                    <form class="d-inline"
+                                        action="/product/<%= item._id %>/quantity/increase?_method=PATCH" method="POST">
+                                        <button class="quantity">+</button>
+                                    </form>
+                                    <% } %>
+                                </div>
+                            </div>
+                            <div class="col-4 col-lg-8 col-md-7">
+                                <form class="mt-sm-3 mt-1 mb-3"
+                                    action="/product/<%= item._id %>/cart/delete?_method=DELETE" method="POST">
+                                    <button type="submit" class="btn btn-danger">REMOVE</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="bg-white" style="position: sticky; top: 15px;">
+                <div class="head border text-secondary fw-bold p-2">
+                    PRICE DETAILS
+                </div>
+                <div class="prices border p-2">
+                    <% totalAmount = 0 %>
+                    <% for(let item of userCart) { %>
+                    <p>
+                        <%= item.product.name %>(<%= item.quantity %> item)
+                        <span class="float-end">&#8377 <%= item.product.price * item.quantity %></span>
+                        <% totalAmount += (item.product.price * item.quantity) %>
+                    </p>
+                    <% } %>
+                </div>
+                <div class="order border border-top p-2">
+                    <p class="fw-bold fs-5">
+                        Total Amount <span class="float-end">&#8377 <%= totalAmount %></span>
+                    </p>
+                </div>
+                <% if(currentUser.address) { %>
+                <div class="order border p-3">
+                    <button class="btn btn-success p-3 fw-bold" onclick="purchase()">PLACE ORDER</button>
+                </div>
+                <% } else { %>
+                <div class="order border p-3">
+                    <button class="btn btn-secondary p-3 fw-bold" disabled>PLACE ORDER</button>
+                    <small class="d-block">Add address to place order.</small>
+                </div>
+                <% } %>
+            </div>
+        </div>
+        <% } else { %>
+        <div class="col-12">
+            <div class="body d-flex flex-column justify-content-center bg-white align-items-center"
+                style="min-height: calc(100vh - 150px);">
+                <p style="font-size: 22px;">Your cart is empty!</p>
+                <p style="font-size: 13px;">Add items to it now.</p>
+                <a class="btn btn-primary ps-5 pe-5" href="/products">Shop now</a>
+            </div>
+        </div>
+        <% } %>
+    </div>
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    var stripePublicKey = '<%= stripePublicKey %>'
+    var stripe = Stripe(stripePublicKey)
+    function purchase() {
+        fetch('/create-checkout-session', {
+            method: 'POST',
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (session) {
+                return stripe.redirectToCheckout({ sessionId: session.id });
+            })
+            .then(function (result) {
+                // If `redirectToCheckout` fails due to a browser or network
+                // error, you should display the localized error message to your
+                // customer using `error.message`.
+                if (result.error) {
+                    alert(result.error.message);
+                }
+            })
+            .catch(function (error) {
+                console.error('Error:', error);
+            });
+    }
+</script>
+
+<%- include("../partials/footer.ejs", {scripts: []})%>

@@ -1,7 +1,8 @@
-<%- include("../partials/header.ejs", {title: "Shoping Cart"}) %> <%-
-include("../partials/navbar.ejs") %>
+<%- include("../partials/header.ejs", {title: "Shoping Cart", style: ["style"]}) %> <%-
+include("../partials/navbar.ejs", {active: "products"}) %>
 
 <div class="container">
+  <%- include('../partials/flash.ejs') %>
   <section>
     <h1>Shopping Cart</h1>
   </section>
@@ -13,9 +14,7 @@ include("../partials/navbar.ejs") %>
         <div class="card-body">
           <h5 class="card-title"><%= product.name %></h5>
           <p class="card-text"><%= product.desc.substring(0, 80) %>...</p>
-          <a href="/products/<%= product._id %>" class="btn btn-outline-primary"
-            >More Info</a
-          >
+          <a href="/products/<%= product._id %>" class="btn btn-outline-primary">More Info</a>
         </div>
       </div>
     </div>

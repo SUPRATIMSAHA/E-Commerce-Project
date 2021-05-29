@@ -1,0 +1,19 @@
+<%- include("../partials/header.ejs", {style: [""], title: "Confirm Password"}) %>
+
+
+<div class="container">
+    <form class="row g-3 col-md-10 col-lg-8" action="/account/check/password" method="POST" style="margin:10px auto">
+        <%- include('../partials/flash.ejs') %>
+        <h4>Enter your current password</h4>
+        <div class="col-12">
+            <label for="password" class="form-label">Current Password</label>
+            <input type="password" name="password" class="form-control" id="password" required>
+        </div>
+        <div class="col-12">
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </div>
+    </form>
+</div>
+
+
+<%- include("../partials/footer.ejs", {scripts: []})%>

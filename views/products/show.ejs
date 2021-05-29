@@ -1,35 +1,157 @@
-<%- include("../partials/header.ejs", {title: "Shoping Cart"}) %> <%-
-include("../partials/navbar.ejs") %>
+<%- include("../partials/header.ejs", {title: "Shoping Cart", style: ["style", "star"]}) %> <%-
+include("../partials/navbar.ejs", {active: "products"}) %>
 
 <div class="container mt-3">
   <div class="row m-0" style="width: 100%">
+    <%- include('../partials/flash.ejs') %>
     <div class="col-lg-6">
       <div class="card text-center w-lg-75">
-        <img src="<%= product.img %>" class="card-img-top p-2" alt="..." />
+        <img src="<%= product.img %>" class="card-img-top p-2" height="400" alt="..." />
         <div class="card-body">
           <h5 class="card-title"><%= product.name %></h5>
           <p class="card-text"><%= product.desc %></p>
+          <% if (currentUser) { %>
           <a href="#" class="btn btn-outline-success m-1">Buy</a>
-          <a href="#" class="btn btn-outline-secondary m-1">Add To Cart</a>
-          <a
-            href="/products/<%= product._id %>/edit"
-            class="btn btn-outline-warning m-1"
-            >Edit</a
-          >
-          <form
-            class="d-inline"
-            action="/products/<%= product._id %>?_method=DELETE"
-            method="POST"
-          >
+          <form class="d-inline" action="/user/<%= product._id %>/cart" method="POST">
+            <button class="btn btn-outline-secondary m-1">Add To Cart</button>
+          </form>
+          <% } else{ %>
+          <a href="/user/signin" class="btn btn-outline-success m-1">Buy</a>
+          <a href="/user/signin" class="btn btn-outline-secondary m-1">Add To Cart</a>
+          <% } %>
+          <% if (currentUser && currentUser._id.equals(product.user._id)) { %>
+          <a href="/products/<%= product._id %>/edit" class="btn btn-outline-warning m-1">Edit</a>
+          <form class="d-inline" action="/products/<%= product._id %>/delete?_method=DELETE" method="POST">
             <button class="btn btn-outline-danger m-1">Delete</button>
           </form>
+          <% } %>
         </div>
       </div>
     </div>
     <div class="col-lg-6 mt-2">
       <h1>Leave a Review</h1>
+      <% if (userReview) { %>
+      <form class="validated-form" action="/products/review/<%= product._id %>/<%= userReview._id %>?_method=PATCH"
+        method="POST">
+        <fieldset class="starability-basic">
+          <% if (userReview.rating == 1) { %>
+          <input type="radio" id="first-rate1" name="rating" value="1" checked />
+          <label for="first-rate1" title="Terrible">1 star</label>
+          <% } else { %>
+          <input type="radio" id="first-rate1" name="rating" value="1" />
+          <label for="first-rate1" title="Terrible">1 star</label>
+          <% } %>
+          <% if (userReview.rating == 2) { %>
+          <input type="radio" id="first-rate2" name="rating" value="2" checked />
+          <label for="first-rate2" title="Not good">2 stars</label>
+          <% } else { %>
+          <input type="radio" id="first-rate2" name="rating" value="2" />
+          <label for="first-rate2" title="Not good">2 stars</label>
+          <% } %>
+          <% if (userReview.rating == 3) { %>
+          <input type="radio" id="first-rate3" name="rating" value="3" checked />
+          <label for="first-rate3" title="Average">3 stars</label>
+          <% } else { %>
+          <input type="radio" id="first-rate3" name="rating" value="3" />
+          <label for="first-rate3" title="Average">3 stars</label>
+          <% } %>
+          <% if (userReview.rating == 4) { %>
+          <input type="radio" id="first-rate4" name="rating" value="4" checked />
+          <label for="first-rate4" title="Very good">4 stars</label>
+          <% } else { %>
+          <input type="radio" id="first-rate4" name="rating" value="4" />
+          <label for="first-rate4" title="Very good">4 stars</label>
+          <% } %>
+          <% if (userReview.rating == 5) { %>
+          <input type="radio" id="first-rate5" name="rating" value="5" checked />
+          <label for="first-rate5" title="Amazing">5 stars</label>
+          <% } else { %>
+          <input type="radio" id="first-rate5" name="rating" value="5" />
+          <label for="first-rate5" title="Amazing">5 stars</label>
+          <% } %>
+        </fieldset>
+
+        <div class="mb-3">
+          <label for="desc" class="form-label">Description</label>
+          <textarea class="form-control" id="desc" cols="35" rows="3" name="comment"
+            required><%= userReview.comment %></textarea>
+          <div class="valid-feedback">
+            Looks good!
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-success">Update</button>
+        <a href="/products/<%= product._id %>" class="btn btn-secondary">Cancel</a>
+      </form>
+      <% } else { %>
+      <form class="validated-form" action="/products/<%=product._id%>/review" method="POST">
+        <fieldset class="starability-basic">
+          <input type="radio" id="first-rate1" name="rating" value="1" checked />
+          <label for="first-rate1" title="Terrible">1 star</label>
+          <input type="radio" id="first-rate2" name="rating" value="2" />
+          <label for="first-rate2" title="Not good">2 stars</label>
+          <input type="radio" id="first-rate3" name="rating" value="3" />
+          <label for="first-rate3" title="Average">3 stars</label>
+          <input type="radio" id="first-rate4" name="rating" value="4" />
+          <label for="first-rate4" title="Very good">4 stars</label>
+          <input type="radio" id="first-rate5" name="rating" value="5" />
+          <label for="first-rate5" title="Amazing">5 stars</label>
+        </fieldset>
+
+        <div class="mb-3">
+          <label for="desc" class="form-label">Description</label>
+          <textarea class="form-control" id="desc" cols="35" rows="3" name="comment" required></textarea>
+          <div class="valid-feedback">
+            Looks good!
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-success">Submit</button>
+      </form>
+      <% } %>
+
+      <div class="mb-3 mt-3">
+        <%for(let review of product.reviews){%>
+        <div class="card mb-3">
+          <% if (currentUser && ((currentUser.google.googleId && review.user.google.googleId === currentUser.google.googleId) || (currentUser.local.username && review.user.local.username === currentUser.local.username))) { %>
+          <span class="test"><i class="fas fa-ellipsis-v"></i></span>
+          <div class="review-content">
+            <a href="/products/review/<%= product._id %>/edit">Edit</a>
+            <form action="/products/review/<%= product._id %>/<%= review._id %>/delete?_method=DELETE" method="POST">
+              <button type="submit" class="btn btn-light">Delete</input>
+            </form>
+          </div>
+          <% } %>
+          <div class="card-body">
+            <p class="starability-result" data-rating="<%=review.rating%>">
+              Rated: <%=review.rating%> stars
+            </p>
+            <p class="card-text fw-bold"><%=review.comment%></p>
+            <p style="color: gray;"><%=review.user.firstName%> <%=review.user.lastName%></p>
+          </div>
+        </div>
+        <%}%>
+    </div>
     </div>
   </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script>
+  var test = document.querySelector(".test");
+  var blog_content = document.querySelector(".review-content");
+
+  $(".test").on("click", function (e) {
+    $(this).parent().find(".review-content").toggle();
+  });
+  $(document).on("click", "body", function (e) {
+    if (
+      !(e.target.className == "test" || e.target.className == "fas fa-ellipsis-v")
+    ) {
+      $(".review-content").hide();
+    }
+  });
+</script>
 
 <%- include("../partials/footer.ejs") %>
