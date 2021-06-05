@@ -1,6 +1,7 @@
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const request = require("request");
 require("dotenv").config();
 
 const User = require("../models/user");
@@ -41,30 +42,39 @@ passport.use(
       clientID: process.env.GOOGLE_AUTH_CLIENT_ID,
       clientSecret: process.env.GOOGLE_AUTH_CLIENT_SECRET,
       callbackURL: "http://localhost:3000/auth/google/callback",
-      userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
     },
-    function (request, accessToken, refreshToken, profile, done) {
+    function (accessToken, refreshToken, profile, done) {
       process.nextTick(function () {
-        User.findOne({ "google.googleId": profile.id }, function (err, user) {
-          if (err) return done(err);
+        request(
+          `https://people.googleapis.com/v1/people/${profile.id}?personFields=genders&key=${process.env.GOOGLE_API_KEY}&access_token=${accessToken}`,
+          (err, req, res) => {
+            if (err) return done(err);
+            User.findOne(
+              { "google.googleId": profile.id },
+              function (err, user) {
+                if (err) return done(err);
 
-          if (user) {
-            return done(null, user);
-          } else {
-            const newUser = new User();
-            newUser.firstName = profile.name.givenName;
-            newUser.lastName = profile.name.familyName;
-            newUser.google.googleId = profile.id;
-            newUser.google.displayName = profile.displayName;
-            newUser.email = profile.emails[0].value;
-            newUser.isVerified = true;
+                if (user) {
+                  return done(null, user);
+                } else {
+                  const newUser = new User();
+                  newUser.firstName = profile.name.givenName;
+                  newUser.lastName = profile.name.familyName;
+                  newUser.google.googleId = profile.id;
+                  newUser.google.displayName = profile.displayName;
+                  newUser.email = profile.emails[0].value;
+                  newUser.gender = JSON.parse(res).genders[0].value;
+                  newUser.isVerified = true;
 
-            newUser.save(function (err) {
-              if (err) return done(null, false, { message: err.message });
-              return done(null, newUser);
-            });
+                  newUser.save(function (err) {
+                    if (err) return done(null, false, { message: err.message });
+                    return done(null, newUser);
+                  });
+                }
+              }
+            );
           }
-        });
+        );
       });
     }
   )

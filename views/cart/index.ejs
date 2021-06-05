@@ -100,14 +100,14 @@
                         Total Amount <span class="float-end">&#8377 <%= totalAmount %></span>
                     </p>
                 </div>
-                <% if(currentUser.address) { %>
+                <% if(currentUser.address && currentUser.phoneno) { %>
                 <div class="order border p-3">
-                    <button class="btn btn-success p-3 fw-bold" onclick="purchase()">PLACE ORDER</button>
+                    <button class="btn btn-success p-3 fw-bold" onclick="purchase(event)">PLACE ORDER</button>
                 </div>
                 <% } else { %>
                 <div class="order border p-3">
                     <button class="btn btn-secondary p-3 fw-bold" disabled>PLACE ORDER</button>
-                    <small class="d-block">Add address to place order.</small>
+                    <small class="d-block">Add address and phone number to place order.</small>
                 </div>
                 <% } %>
             </div>
@@ -125,11 +125,16 @@
     </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script src="https://js.stripe.com/v3/"></script>
 <script>
     var stripePublicKey = '<%= stripePublicKey %>'
     var stripe = Stripe(stripePublicKey)
-    function purchase() {
+    function purchase(e) {
+        $(e.target).prop("disabled", true)
+        $('body > *').wrap('<div class="blur-all">')
+        $("body").prepend(`<div class="spinner-border text-primary" role="status"></div> `)
         fetch('/create-checkout-session', {
             method: 'POST',
         })

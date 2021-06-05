@@ -18,7 +18,6 @@ router.get("/account/orders", isLoggedIn, async (req, res) => {
         path: "orders",
         populate: { path: "orderedProducts", populate: { path: "product" } },
       });
-      console.log(user.orders[0].orderedProducts);
 
       res.render("account/orders", { orders: user.orders });
     } else {

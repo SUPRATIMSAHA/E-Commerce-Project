@@ -1,6 +1,7 @@
 <%- include("../partials/header.ejs", {title: "Shoping Cart", style: ["style", "star"]}) %> <%-
 include("../partials/navbar.ejs", {active: "products"}) %>
 
+
 <div class="container mt-3">
   <div class="row m-0" style="width: 100%">
     <%- include('../partials/flash.ejs') %>
@@ -11,7 +12,14 @@ include("../partials/navbar.ejs", {active: "products"}) %>
           <h5 class="card-title"><%= product.name %></h5>
           <p class="card-text"><%= product.desc %></p>
           <% if (currentUser) { %>
-          <a href="#" class="btn btn-outline-success m-1">Buy</a>
+          <% if(currentUser.address && currentUser.phoneno) { %>
+          <button class="btn btn-outline-success m-1" onclick="purchase(event)">Buy</button>
+          <% } else { %>
+          <span class="d-inline-block" tabindex="0" data-bs-toggle="tooltip"
+            title="Add address and phone number to place order.">
+            <button class="btn btn-outline-success m-1" disabled>Buy</button>
+          </span>
+          <% } %>
           <form class="d-inline" action="/user/<%= product._id %>/cart" method="POST">
             <button class="btn btn-outline-secondary m-1">Add To Cart</button>
           </form>
@@ -136,22 +144,65 @@ include("../partials/navbar.ejs", {active: "products"}) %>
   </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"
-    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-<script>
-  var test = document.querySelector(".test");
-  var blog_content = document.querySelector(".review-content");
-
-  $(".test").on("click", function (e) {
-    $(this).parent().find(".review-content").toggle();
-  });
-  $(document).on("click", "body", function (e) {
-    if (
-      !(e.target.className == "test" || e.target.className == "fas fa-ellipsis-v")
-    ) {
-      $(".review-content").hide();
-    }
-  });
-</script>
-
 <%- include("../partials/footer.ejs") %>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+          integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script src="https://js.stripe.com/v3/"></script>
+        <script>
+          var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+          var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+          })
+          var test = document.querySelector(".test");
+          var blog_content = document.querySelector(".review-content");
+          var stripePublicKey = '<%= stripePublicKey %>'
+          var data = {
+            id: '<%= product._id %>'
+          }
+          var stripe = Stripe(stripePublicKey)
+          function purchase(e) {
+            $(e.target).prop("disabled", true)
+            $('body > *').wrap('<div class="blur-all">')
+            $("body").prepend(`<div class="spinner-border text-primary" role="status"></div> `)
+            fetch('/buy/create-checkout-session', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(data)
+            })
+              .then(function (response) {
+                return response.json();
+              })
+              .then(function (session) {
+                return stripe.redirectToCheckout({ sessionId: session.id });
+              })
+              .then(function (result) {
+                // If `redirectToCheckout` fails due to a browser or network
+                // error, you should display the localized error message to your
+                // customer using `error.message`.
+                if (result.error) {
+                  $("body > *").removeClass("blur-all");
+                  $("body").remove(".spinner-border")
+                  alert(result.error.message);
+                }
+              })
+              .catch(function (error) {
+                console.error('Error:', error);
+              });
+          }
+          $(document).on("click", '.blur-all *', function () {
+            return false;
+          });
+          $(".blur-all *").css({ "pointer-events": "all", "cursor": "not-allowed" })
+          $(".test").on("click", function (e) {
+            $(this).parent().find(".review-content").toggle();
+          });
+          $(document).on("click", "body", function (e) {
+            if (
+              !(e.target.className == "test" || e.target.className == "fas fa-ellipsis-v")
+            ) {
+              $(".review-content").hide();
+            }
+          });
+        </script>

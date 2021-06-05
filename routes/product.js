@@ -48,7 +48,11 @@ router.get("/products/:id", async (req, res) => {
     .populate("user")
     .populate({ path: "reviews", populate: { path: "user" } });
 
-  res.render("products/show", { product, userReview: "" });
+  res.render("products/show", {
+    product,
+    userReview: "",
+    stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
+  });
 });
 
 router.post("/products/:id/review", isLoggedIn, async (req, res) => {
