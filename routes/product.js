@@ -166,7 +166,9 @@ router.patch("/products/:id", isLoggedIn, async (req, res) => {
         const product = await Product.findById(req.params.id);
         if (req.user._id.equals(product.user._id)) {
           await cloudinary.uploader.destroy(product.cloudinary_id);
-          const result = await cloudinary.uploader.upload(req.file.path);
+          const result = await cloudinary.uploader.upload(req.file.path, {
+            upload_preset: "e_commerce",
+          });
           const data = {
             name: req.body.name || product.name,
             img: result.secure_url || product.img,

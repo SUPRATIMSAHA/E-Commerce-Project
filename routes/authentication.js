@@ -3,7 +3,6 @@ const passport = require("../utils/passport");
 const User = require("../models/user");
 const Token = require("../models/token");
 const crypto = require("crypto");
-const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const ejs = require("ejs");
 const fs = require("fs");
@@ -212,7 +211,7 @@ router.get("/forgot/password", (req, res) => {
 router.post("/forgot/password", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
-    if (!user)
+    if (!user || !user.local.username)
       throw new Error("We were unable to find a user with that email.");
 
     // Create a verification token, save it, and send email
